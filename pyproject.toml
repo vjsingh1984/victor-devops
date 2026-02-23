@@ -63,6 +63,9 @@ devops = "victor_devops.assistant:DevOpsAssistant"
 [tool.setuptools]
 packages = [
     "victor_devops",
+    "victor_devops.rl",
+    "victor_devops.teams",
+    "victor_devops.workflows",
 ]
 
 [tool.black]
