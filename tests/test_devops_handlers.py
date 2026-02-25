@@ -734,6 +734,6 @@ class TestMLOpsInRegistry:
 
     def test_mlops_exported(self):
         """Test MLOpsHandler class is in __all__."""
-        from victor.devops import handlers
+        from victor_devops import handlers
 
         assert "MLOpsHandler" in handlers.__all__

@@ -330,7 +330,7 @@ class TestCapabilitiesExports:
 
     def test_module_all_exports(self):
         """Test module __all__ exports."""
-        from victor.devops import capabilities
+        from victor_devops import capabilities
 
         assert "DevOpsCapabilityProvider" in capabilities.__all__
         assert "configure_deployment_safety" in capabilities.__all__
