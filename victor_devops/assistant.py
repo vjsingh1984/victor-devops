@@ -208,6 +208,17 @@ When creating configurations:
             .build()
         )
 
+    @classmethod
+    def get_capability_provider(cls):
+        """Get the capability provider for DevOpsAssistant.
+
+        Returns:
+            DevOpsCapabilityProvider instance
+        """
+        from victor_devops.capabilities import DevOpsCapabilityProvider
+
+        return DevOpsCapabilityProvider()
+
     # =========================================================================
     # New Framework Integrations (Workflows, RL, Teams)
     # =========================================================================
