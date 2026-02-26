@@ -371,6 +371,7 @@ def list_composed_patterns() -> List[str]:
 __all__ = [  # noqa: F822 - constants defined via __getattr__ for lazy loading
     # Provider class
     "DevOpsToolDependencyProvider",
+    "get_provider",
     # Data exports (lazy-loaded with deprecation warnings)
     "DEVOPS_TOOL_DEPENDENCIES",
     "DEVOPS_TOOL_TRANSITIONS",
@@ -385,3 +386,31 @@ __all__ = [  # noqa: F822 - constants defined via __getattr__ for lazy loading
     "get_composed_pattern",
     "list_composed_patterns",
 ]
+
+
+# =============================================================================
+# Entry Point Provider Factory
+# =============================================================================
+
+
+def get_provider() -> DevOpsToolDependencyProvider:
+    """Entry point provider factory for devops vertical.
+
+    This function is registered as an entry point in pyproject.toml:
+        [project.entry-points."victor.tool_dependencies"]
+        devops = "victor_devops.tool_dependencies:get_provider"
+
+    Returns:
+        A configured tool dependency provider for the devops vertical.
+
+    Example:
+        # Framework usage via entry points:
+        from importlib.metadata import entry_points
+        eps = entry_points(group="victor.tool_dependencies")
+        for ep in eps:
+            if ep.name == "devops":
+                provider_factory = ep.load()
+                provider = provider_factory()
+                deps = provider.get_dependencies()
+    """
+    return DevOpsToolDependencyProvider()

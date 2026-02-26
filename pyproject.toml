@@ -60,6 +60,12 @@ Issues = "https://github.com/vjsingh1984/victor-devops/issues"
 [project.entry-points."victor.verticals"]
 devops = "victor_devops.assistant:DevOpsAssistant"
 
+[project.entry-points."victor.tool_dependencies"]
+devops = "victor_devops.tool_dependencies:get_provider"
+
+[project.entry-points."victor.safety_rules"]
+devops = "victor_devops.safety:create_all_devops_safety_rules"
+
 [tool.setuptools]
 packages = [
     "victor_devops",
