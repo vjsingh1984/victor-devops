@@ -86,9 +86,9 @@ class DevOpsWorkflowProvider(BaseYAMLWorkflowProvider):
         """Return the module path for DevOps escape hatches.
 
         Returns:
-            Module path to victor.devops.escape_hatches
+            Module path to victor_devops.escape_hatches
         """
-        return "victor.devops.escape_hatches"
+        return "victor_devops.escape_hatches"
 
     def _get_capability_provider_module(self) -> Optional[str]:
         """Return the module path for the DevOps capability provider.
@@ -96,7 +96,7 @@ class DevOpsWorkflowProvider(BaseYAMLWorkflowProvider):
         Returns:
             Module path string for DevOpsCapabilityProvider
         """
-        return "victor.devops.capabilities"
+        return "victor_devops.capabilities"
 
 
 __all__ = [

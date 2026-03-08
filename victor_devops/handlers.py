@@ -20,7 +20,7 @@ Domain-specific handlers for DevOps workflows:
 - mlops: MLOps pipeline operations (MLflow, model registry, deployment)
 
 Usage:
-    from victor.devops import handlers
+    from victor_devops import handlers
     handlers.register_handlers()
 
     # In YAML workflow:
