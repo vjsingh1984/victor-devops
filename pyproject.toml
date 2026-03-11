@@ -69,6 +69,13 @@ devops = "victor_devops.safety:create_all_devops_safety_rules"
 [project.entry-points."victor.framework.teams.providers"]
 devops = "victor_devops.teams:DevOpsTeamSpecProvider"
 
+# NEW: Victor SDK Protocol implementations
+[project.entry-points."victor.sdk.protocols"]
+devops-tools = "victor_devops.protocols:DevOpsToolProvider"
+devops-safety = "victor_devops.protocols:DevOpsSafetyProvider"
+devops-prompts = "victor_devops.protocols:DevOpsPromptProvider"
+devops-workflows = "victor_devops.protocols:DevOpsWorkflowProvider"
+
 [tool.setuptools]
 packages = [
     "victor_devops",

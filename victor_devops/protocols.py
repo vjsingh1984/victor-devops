@@ -1,0 +1,256 @@
+# Copyright 2025 Vijaykumar Singh <singhvjd@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Victor SDK Protocol implementations for victor-devops.
+
+This module provides protocol implementations that can be discovered via
+the victor-sdk entry point system, enabling the DevOps vertical to
+register capabilities with the framework without direct dependencies.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any, Dict, List, Optional
+
+# Import victor-sdk protocols (NO runtime dependency on victor-ai!)
+try:
+    from victor_sdk.verticals.protocols import (
+        ToolProvider,
+        ToolSelectionStrategy,
+        SafetyProvider,
+        SafetyExtension,
+        PromptProvider,
+        WorkflowProvider,
+    )
+except ImportError:
+    # For backward compatibility during transition
+    from victor.core.verticals.protocols import (
+        ToolProviderProtocol as ToolProvider,
+        SafetyProviderProtocol as SafetyProvider,
+        PromptProviderProtocol as PromptProvider,
+        WorkflowProviderProtocol as WorkflowProvider,
+    )
+
+logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# Tool Provider
+# =============================================================================
+
+
+class DevOpsToolProvider(ToolProvider):
+    """Tool provider for DevOps vertical.
+
+    Provides the list of tools available to the DevOps assistant.
+    """
+
+    def get_tools(self) -> List[str]:
+        """Return list of tool names for DevOps vertical."""
+        return [
+            # Core filesystem tools
+            "read",
+            "write",
+            "edit",
+            "grep",
+            "ls",
+            # Docker tools
+            "docker_build",
+            "docker_run",
+            "docker_compose",
+            "docker_ps",
+            "docker_logs",
+            "docker_exec",
+            # Kubernetes tools
+            "kubectl_apply",
+            "kubectl_get",
+            "kubectl_logs",
+            "kubectl_describe",
+            # CI/CD tools
+            "jenkins_build",
+            "github_actions",
+            "gitlab_ci",
+            # Cloud tools
+            "aws_cli",
+            "gcloud_cli",
+            "azure_cli",
+            # Infrastructure as Code
+            "terraform_apply",
+            "terraform_plan",
+            "ansible_playbook",
+            # Monitoring tools
+            "prometheus_query",
+            "grafana_dashboard",
+            # Shell execution
+            "shell",
+            "ssh",
+        ]
+
+
+class DevOpsToolSelectionStrategy(ToolSelectionStrategy):
+    """Stage-aware tool selection for DevOps tasks."""
+
+    def get_tools_for_stage(self, stage: str, task_type: str) -> List[str]:
+        """Return optimized tools for given stage and task type."""
+        stage_tools: Dict[str, List[str]] = {
+            "assess": ["read", "grep", "ls", "shell"],
+            "plan": ["read", "terraform_plan", "kubectl_get"],
+            "apply": ["terraform_apply", "kubectl_apply", "docker_build"],
+            "verify": ["kubectl_get", "docker_ps", "shell"],
+            "monitor": ["prometheus_query", "kubectl_logs", "docker_logs"],
+        }
+
+        return stage_tools.get(stage, ["read", "shell"])
+
+
+# =============================================================================
+# Safety Provider
+# =============================================================================
+
+
+class DevOpsSafetyProvider(SafetyProvider):
+    """Safety provider for DevOps vertical.
+
+    Provides DevOps-specific safety patterns for infrastructure operations.
+    """
+
+    def __init__(self):
+        # DevOps-specific dangerous patterns
+        self._dangerous_patterns = [
+            # Docker dangerous commands
+            {"pattern": "docker rm -f", "description": "Force remove containers"},
+            {"pattern": "docker rmi -f", "description": "Force remove images"},
+            {"pattern": "docker system prune -f", "description": "Prune all Docker data"},
+            # Kubernetes dangerous commands
+            {"pattern": "kubectl delete", "description": "Delete K8s resources"},
+            {"pattern": "kubectl apply --force", "description": "Force apply K8s resources"},
+            {"pattern": "kubectl drain", "description": "Drain K8s node"},
+            # Terraform dangerous commands
+            {"pattern": "terraform destroy", "description": "Destroy infrastructure"},
+            {"pattern": "terraform apply -auto-approve", "description": "Auto-approve changes"},
+            # Production dangerous commands
+            {"pattern": "rm -rf /", "description": "Recursive root deletion"},
+            {"pattern": "dd if=/dev/zero", "description": "Disk wiping"},
+            {"pattern": "> /dev/sda", "description": "Disk overwrite"},
+        ]
+
+    def get_extensions(self) -> List[Any]:
+        """Return safety extensions for DevOps."""
+        return [self]
+
+    def get_bash_patterns(self) -> List[Any]:
+        """Return bash command patterns to monitor."""
+        return self._dangerous_patterns
+
+    def get_file_patterns(self) -> List[Any]:
+        """Return file operation patterns to monitor."""
+        return []
+
+    def get_tool_restrictions(self) -> Dict[str, List[str]]:
+        """Return tool-specific restrictions."""
+        return {
+            "kubectl_apply": ["--dry-run=client"],
+            "terraform_apply": ["-auto-approve"],
+        }
+
+
+# =============================================================================
+# Prompt Provider
+# =============================================================================
+
+
+class DevOpsPromptProvider(PromptProvider):
+    """Prompt provider for DevOps vertical.
+
+    Provides system prompt sections for infrastructure tasks.
+    """
+
+    def get_system_prompt_sections(self) -> Dict[str, str]:
+        """Return system prompt sections."""
+        return {
+            "role": "You are a DevOps assistant specializing in infrastructure automation, CI/CD, and cloud operations.",
+            "expertise": "You have expertise in Docker, Kubernetes, Terraform, Ansible, and major cloud providers (AWS, GCP, Azure).",
+            "safety": "Always check infrastructure state before making changes. Use dry-run modes where available. Never force destructive operations without explicit confirmation.",
+            "best_practices": "Follow Infrastructure as Code best practices: idempotency, declarative configuration, and immutable infrastructure.",
+        }
+
+    def get_task_type_hints(self) -> Dict[str, Any]:
+        """Return task type hints for DevOps."""
+        return {
+            "deploy": {
+                "hint": "[DEPLOY] Plan infrastructure changes, apply configurations, verify health.",
+                "tool_budget": 10,
+            },
+            "monitor": {
+                "hint": "[MONITOR] Check logs, metrics, and service health.",
+                "tool_budget": 8,
+            },
+            "troubleshoot": {
+                "hint": "[TROUBLESHOOT] Diagnose issues, check logs, describe resources.",
+                "tool_budget": 15,
+            },
+        }
+
+    def get_prompt_contributors(self) -> List[Any]:
+        """Return prompt contributors for DevOps."""
+        return []
+
+
+# =============================================================================
+# Workflow Provider
+# =============================================================================
+
+
+class DevOpsWorkflowProvider(WorkflowProvider):
+    """Workflow provider for DevOps vertical.
+
+    Provides DevOps-specific workflow definitions.
+    """
+
+    def get_workflows(self) -> Dict[str, Any]:
+        """Return workflow specifications."""
+        return {
+            "deploy_service": {
+                "name": "Deploy Service",
+                "description": "Deploy a service to production",
+                "stages": ["assess", "plan", "apply", "verify"],
+            },
+            "rollback_deployment": {
+                "name": "Rollback Deployment",
+                "description": "Rollback a failed deployment",
+                "stages": ["assess", "apply", "verify"],
+            },
+        }
+
+    def get_workflow(self, name: str) -> Optional[Any]:
+        """Get a specific workflow by name."""
+        return self.get_workflows().get(name)
+
+    def list_workflows(self) -> List[str]:
+        """List available workflow names."""
+        return list(self.get_workflows().keys())
+
+
+# =============================================================================
+# Exports
+# =============================================================================
+
+__all__ = [
+    "DevOpsToolProvider",
+    "DevOpsToolSelectionStrategy",
+    "DevOpsSafetyProvider",
+    "DevOpsPromptProvider",
+    "DevOpsWorkflowProvider",
+]
