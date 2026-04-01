@@ -6,6 +6,7 @@ Competitive positioning: Docker Desktop AI, Terraform Assistant, Pulumi AI, K8s 
 from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING
 
 from victor.core.verticals.base import StageDefinition, VerticalBase
+from victor.core.verticals.registration import register_vertical
 from victor.core.verticals.protocols import (
     MiddlewareProtocol,
     ModeConfigProviderProtocol,
@@ -16,6 +17,16 @@ from victor.core.verticals.protocols import (
 )
 
 
+@register_vertical(
+    name="devops",
+    version="1.0.0",
+    min_framework_version=">=0.6.0",
+    canonicalize_tool_names=True,
+    tool_dependency_strategy="auto",
+    strict_mode=True,  # DevOps needs stricter safety
+    load_priority=90,
+    plugin_namespace="default",
+)
 class DevOpsAssistant(VerticalBase):
     """DevOps assistant for infrastructure, deployment, and CI/CD automation.
 
