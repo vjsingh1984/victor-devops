@@ -244,6 +244,126 @@ class DevOpsWorkflowProvider(WorkflowProvider):
 
 
 # =============================================================================
+# Extended Protocol Implementations: Sandbox, Permissions, Hooks
+# =============================================================================
+
+# Import new SDK protocols (optional, for forward compatibility)
+try:
+    from victor_sdk.verticals.protocols import (
+        SandboxProvider as SandboxProviderProtocol,
+        PermissionProvider as PermissionProviderProtocol,
+        HookProvider as HookProviderProtocol,
+    )
+except ImportError:
+    SandboxProviderProtocol = None
+    PermissionProviderProtocol = None
+    HookProviderProtocol = None
+
+
+class DevOpsSandboxProvider:
+    """Sandbox configuration for DevOps vertical.
+
+    DevOps requires broader access than coding — docker socket,
+    cloud CLI configs, and network access for deployments.
+    """
+
+    def get_sandbox_config(self) -> Dict[str, Any]:
+        return {
+            "enabled": True,
+            "filesystem_mode": "allow-list",
+            "namespace_restrictions": True,
+            "network_isolation": False,
+            "allowed_mounts": [
+                "/var/run/docker.sock",
+                "~/.kube",
+                "~/.aws",
+                "~/.gcloud",
+                "~/.terraform.d",
+            ],
+        }
+
+    def get_tool_sandbox_overrides(self) -> Dict[str, Dict[str, Any]]:
+        return {
+            "kubectl_exec": {"network_isolation": False},
+            "docker_run": {
+                "filesystem_mode": "allow-list",
+                "allowed_mounts": ["/var/run/docker.sock"],
+            },
+            "terraform_apply": {"network_isolation": False},
+        }
+
+
+class DevOpsPermissionProvider:
+    """Permission configuration for DevOps vertical.
+
+    DevOps starts at workspace-write but many tools require
+    danger-full-access (deployment, infrastructure changes).
+    """
+
+    def get_permission_mode(self) -> str:
+        return "workspace-write"
+
+    def get_tool_permissions(self) -> Dict[str, str]:
+        return {
+            # Read-only
+            "read": "read-only",
+            "grep": "read-only",
+            "kubectl_get": "read-only",
+            "docker_ps": "read-only",
+            "docker_logs": "read-only",
+            "terraform_plan": "read-only",
+            "aws_describe": "read-only",
+            "prometheus_query": "read-only",
+            # Workspace-write
+            "write": "workspace-write",
+            "edit": "workspace-write",
+            "git_branch": "workspace-write",
+            # Danger — destructive operations
+            "shell": "danger-full-access",
+            "kubectl_apply": "danger-full-access",
+            "kubectl_delete": "danger-full-access",
+            "kubectl_exec": "danger-full-access",
+            "docker_run": "danger-full-access",
+            "docker_rm": "danger-full-access",
+            "terraform_apply": "danger-full-access",
+            "terraform_destroy": "danger-full-access",
+            "ansible_playbook": "danger-full-access",
+            "aws_create": "danger-full-access",
+            "aws_delete": "danger-full-access",
+        }
+
+    def get_permission_escalation_rules(self) -> List[Dict[str, Any]]:
+        return [
+            {
+                "tool_pattern": "terraform_plan",
+                "from_mode": "workspace-write",
+                "to_mode": "read-only",
+                "auto_approve": True,
+            },
+            {
+                "tool_pattern": "kubectl_get*",
+                "from_mode": "workspace-write",
+                "to_mode": "read-only",
+                "auto_approve": True,
+            },
+        ]
+
+
+class DevOpsHookProvider:
+    """Hook configuration for DevOps vertical.
+
+    DevOps hooks focus on safety — preventing dangerous
+    infrastructure operations without confirmation.
+    """
+
+    def get_pre_tool_hooks(self) -> List[str]:
+        return []
+
+    def get_post_tool_hooks(self) -> List[str]:
+        return []
+
+
+# =============================================================================
 # Exports
 # =============================================================================
 
@@ -253,4 +373,8 @@ __all__ = [
     "DevOpsSafetyProvider",
     "DevOpsPromptProvider",
     "DevOpsWorkflowProvider",
+    # Sandbox, permission, and hook providers
+    "DevOpsSandboxProvider",
+    "DevOpsPermissionProvider",
+    "DevOpsHookProvider",
 ]

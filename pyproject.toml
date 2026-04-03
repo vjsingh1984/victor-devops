@@ -78,6 +78,16 @@ devops-safety = "victor_devops.protocols:DevOpsSafetyProvider"
 devops-prompts = "victor_devops.protocols:DevOpsPromptProvider"
 devops-workflows = "victor_devops.protocols:DevOpsWorkflowProvider"
 
+# Extended providers: sandbox isolation, permission hierarchy, hooks
+[project.entry-points."victor.sandbox.providers"]
+devops-sandbox = "victor_devops.protocols:DevOpsSandboxProvider"
+
+[project.entry-points."victor.permission.providers"]
+devops-permissions = "victor_devops.protocols:DevOpsPermissionProvider"
+
+[project.entry-points."victor.hook.providers"]
+devops-hooks = "victor_devops.protocols:DevOpsHookProvider"
+
 [tool.setuptools]
 packages = [
     "victor_devops",
