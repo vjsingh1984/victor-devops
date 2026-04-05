@@ -59,7 +59,7 @@ Repository = "https://github.com/vjsingh1984/victor-devops"
 Documentation = "https://docs.victor.dev/verticals/devops"
 Issues = "https://github.com/vjsingh1984/victor-devops/issues"
 
-[project.entry-points."victor.verticals"]
+[project.entry-points."victor.plugins"]
 devops = "victor_devops.assistant:DevOpsAssistant"
 
 [project.entry-points."victor.tool_dependencies"]
