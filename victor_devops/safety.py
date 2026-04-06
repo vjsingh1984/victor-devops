@@ -37,7 +37,7 @@ from victor.security.safety.infrastructure import (
     get_safety_reminders as core_get_safety_reminders,
 )
 from victor.security.safety.secrets import CREDENTIAL_PATTERNS, SecretScanner
-from victor.core.verticals.protocols import SafetyExtensionProtocol, SafetyPattern
+from victor_sdk.verticals import SafetyExtensionProtocol, SafetyPattern
 
 # Risk levels (kept for backward compatibility)
 HIGH = "HIGH"

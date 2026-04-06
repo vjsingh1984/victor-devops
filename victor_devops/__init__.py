@@ -28,6 +28,7 @@ from victor_devops.conversation_enhanced import (
 )
 from victor_devops.tool_dependencies import DevOpsToolDependencyProvider
 from victor_devops.capabilities import DevOpsCapabilityProvider
+from victor_devops.plugin import DevOpsPlugin, plugin
 from victor_devops.protocols import (
     DevOpsSandboxProvider,
     DevOpsPermissionProvider,
@@ -47,6 +48,8 @@ __all__ = [
     # Other extensions
     "DevOpsToolDependencyProvider",
     "DevOpsCapabilityProvider",
+    "DevOpsPlugin",
+    "plugin",
     # Sandbox, permission, and hook providers
     "DevOpsSandboxProvider",
     "DevOpsPermissionProvider",

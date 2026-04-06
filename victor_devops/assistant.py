@@ -6,14 +6,9 @@ Competitive positioning: Docker Desktop AI, Terraform Assistant, Pulumi AI, K8s 
 from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING
 
 from victor.core.verticals.base import StageDefinition, VerticalBase
-from victor.core.verticals.registration import register_vertical
-from victor.core.verticals.protocols import (
+from victor_sdk.verticals import (
     MiddlewareProtocol,
-    ModeConfigProviderProtocol,
-    PromptContributorProtocol,
-    SafetyExtensionProtocol,
-    TieredToolConfig,
-    ToolDependencyProviderProtocol,
+    register_vertical,
 )
 
 
