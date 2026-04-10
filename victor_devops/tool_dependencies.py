@@ -47,7 +47,7 @@ Example:
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from victor.core.tool_dependency_loader import (
+from victor.framework.extensions import (
     YAMLToolDependencyProvider,
     load_tool_dependency_yaml,
 )
@@ -227,7 +227,7 @@ class DevOpsToolDependencyProvider(YAMLToolDependencyProvider):
 
     Example:
         # Preferred (new code):
-        from victor.core.tool_dependency_loader import create_vertical_tool_dependency_provider
+        from victor.framework.extensions import create_vertical_tool_dependency_provider
         provider = create_vertical_tool_dependency_provider("devops")
 
         # Deprecated (backward compatible):

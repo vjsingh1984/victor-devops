@@ -1,57 +1,61 @@
-"""DevOps Vertical Package - Complete implementation with extensions.
+"""DevOps vertical package with lazy exports for SDK-first installs."""
 
-Competitive use case: Replaces/augments Docker Desktop AI, Terraform Assistant, Pulumi AI.
+from __future__ import annotations
 
-This vertical provides:
-- Docker and container management
-- CI/CD pipeline configuration
-- Infrastructure as Code (IaC) generation
-- Kubernetes manifest creation
-- Monitoring and observability setup
-
-Enhanced Features:
-- Enhanced safety with SafetyCoordinator (safety_enhanced.py)
-- Enhanced conversation management with ConversationCoordinator (conversation_enhanced.py)
-"""
-
-from victor_devops.assistant import DevOpsAssistant
-from victor_devops.prompts import DevOpsPromptContributor
-from victor_devops.mode_config import DevOpsModeConfigProvider
-from victor_devops.safety import DevOpsSafetyExtension
-from victor_devops.safety_enhanced import (
-    DevOpsSafetyRules,
-    EnhancedDevOpsSafetyExtension,
-)
-from victor_devops.conversation_enhanced import (
-    DevOpsContext,
-    EnhancedDevOpsConversationManager,
-)
-from victor_devops.tool_dependencies import DevOpsToolDependencyProvider
-from victor_devops.capabilities import DevOpsCapabilityProvider
-from victor_devops.plugin import DevOpsPlugin, plugin
-from victor_devops.protocols import (
-    DevOpsSandboxProvider,
-    DevOpsPermissionProvider,
-    DevOpsHookProvider,
-)
+from importlib import import_module
+from typing import Any
 
 __all__ = [
     "DevOpsAssistant",
     "DevOpsPromptContributor",
     "DevOpsModeConfigProvider",
     "DevOpsSafetyExtension",
-    # Enhanced Extensions (with new coordinators)
     "EnhancedDevOpsSafetyExtension",
     "EnhancedDevOpsConversationManager",
     "DevOpsSafetyRules",
     "DevOpsContext",
-    # Other extensions
     "DevOpsToolDependencyProvider",
     "DevOpsCapabilityProvider",
     "DevOpsPlugin",
     "plugin",
-    # Sandbox, permission, and hook providers
     "DevOpsSandboxProvider",
     "DevOpsPermissionProvider",
     "DevOpsHookProvider",
 ]
+
+_EXPORTS = {
+    "DevOpsAssistant": ("victor_devops.assistant", "DevOpsAssistant"),
+    "DevOpsPromptContributor": ("victor_devops.prompts", "DevOpsPromptContributor"),
+    "DevOpsModeConfigProvider": ("victor_devops.mode_config", "DevOpsModeConfigProvider"),
+    "DevOpsSafetyExtension": ("victor_devops.safety", "DevOpsSafetyExtension"),
+    "EnhancedDevOpsSafetyExtension": (
+        "victor_devops.safety_enhanced",
+        "EnhancedDevOpsSafetyExtension",
+    ),
+    "EnhancedDevOpsConversationManager": (
+        "victor_devops.conversation_enhanced",
+        "EnhancedDevOpsConversationManager",
+    ),
+    "DevOpsSafetyRules": ("victor_devops.safety_enhanced", "DevOpsSafetyRules"),
+    "DevOpsContext": ("victor_devops.conversation_enhanced", "DevOpsContext"),
+    "DevOpsToolDependencyProvider": (
+        "victor_devops.tool_dependencies",
+        "DevOpsToolDependencyProvider",
+    ),
+    "DevOpsCapabilityProvider": ("victor_devops.capabilities", "DevOpsCapabilityProvider"),
+    "DevOpsPlugin": ("victor_devops.plugin", "DevOpsPlugin"),
+    "plugin": ("victor_devops.plugin", "plugin"),
+    "DevOpsSandboxProvider": ("victor_devops.protocols", "DevOpsSandboxProvider"),
+    "DevOpsPermissionProvider": ("victor_devops.protocols", "DevOpsPermissionProvider"),
+    "DevOpsHookProvider": ("victor_devops.protocols", "DevOpsHookProvider"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    target = _EXPORTS.get(name)
+    if target is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    module_name, attribute_name = target
+    module = import_module(module_name)
+    return getattr(module, attribute_name)
