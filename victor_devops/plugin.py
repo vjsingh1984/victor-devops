@@ -6,8 +6,6 @@ from typing import Any, Dict, Optional
 
 from victor_sdk import PluginContext, VictorPlugin
 
-from victor_devops.assistant import DevOpsAssistant
-
 
 class DevOpsPlugin(VictorPlugin):
     """VictorPlugin adapter for the devops vertical package."""
@@ -17,6 +15,8 @@ class DevOpsPlugin(VictorPlugin):
         return "devops"
 
     def register(self, context: PluginContext) -> None:
+        from victor_devops.assistant import DevOpsAssistant
+
         context.register_vertical(DevOpsAssistant)
 
     def get_cli_app(self) -> Optional[Any]:
@@ -38,7 +38,7 @@ class DevOpsPlugin(VictorPlugin):
         return {
             "healthy": True,
             "vertical": "devops",
-            "vertical_class": DevOpsAssistant.__name__,
+            "vertical_class": "DevOpsAssistant",
         }
 
 

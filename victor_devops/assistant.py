@@ -5,7 +5,7 @@ Competitive positioning: Docker Desktop AI, Terraform Assistant, Pulumi AI, K8s 
 
 from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING
 
-from victor.core.verticals.base import StageDefinition, VerticalBase
+from victor_sdk import StageDefinition, ToolNames, VerticalBase
 from victor_sdk.verticals import (
     MiddlewareProtocol,
     register_vertical,
@@ -20,7 +20,7 @@ from victor_sdk.verticals import (
     tool_dependency_strategy="auto",
     strict_mode=True,  # DevOps needs stricter safety
     load_priority=90,
-    plugin_namespace="default",
+    plugin_namespace="victor.devops",
 )
 class DevOpsAssistant(VerticalBase):
     """DevOps assistant for infrastructure, deployment, and CI/CD automation.
@@ -31,6 +31,15 @@ class DevOpsAssistant(VerticalBase):
     name = "devops"
     description = "Infrastructure automation, container management, CI/CD, and deployment"
     version = "1.0.0"
+    VERTICAL_API_VERSION = 1
+
+    @classmethod
+    def get_name(cls) -> str:
+        return cls.name
+
+    @classmethod
+    def get_description(cls) -> str:
+        return cls.description
 
     @classmethod
     def get_tools(cls) -> List[str]:
@@ -38,8 +47,6 @@ class DevOpsAssistant(VerticalBase):
 
         Uses canonical tool names from victor.tools.tool_names.
         """
-        from victor.tools.tool_names import ToolNames
-
         return [
             # Core filesystem
             ToolNames.READ,  # read_file → read
@@ -73,8 +80,6 @@ class DevOpsAssistant(VerticalBase):
 
         Uses canonical tool names from victor.tools.tool_names.
         """
-        from victor.tools.tool_names import ToolNames
-
         return {
             "INITIAL": StageDefinition(
                 name="INITIAL",
