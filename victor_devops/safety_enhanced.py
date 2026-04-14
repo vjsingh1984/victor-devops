@@ -334,9 +334,7 @@ class EnhancedDevOpsSafetyExtension(SafetyExtensionProtocol):
             List of safety patterns for dangerous bash commands
         """
         # Import from core safety patterns
-        from victor.security.safety.code_patterns import (
-            BUILD_DEPLOY_PATTERNS,
-        )
+        from victor_sdk.safety_patterns import BUILD_DEPLOY_PATTERNS
 
         patterns: List[SafetyPattern] = []
         if self._enable_custom_rules:

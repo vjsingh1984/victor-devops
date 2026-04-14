@@ -3,7 +3,7 @@
 Competitive positioning: Docker Desktop AI, Terraform Assistant, Pulumi AI, K8s GPT.
 """
 
-from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING
+from typing import Dict, List
 
 from victor_sdk import StageDefinition, ToolNames, VerticalBase
 from victor_sdk.verticals import (
@@ -199,7 +199,7 @@ When creating configurations:
         Returns:
             List of middleware implementations
         """
-        from victor.framework.middleware import MiddlewareComposer
+        from victor_sdk.middleware_runtime import MiddlewareComposer
 
         return (
             MiddlewareComposer()
