@@ -38,7 +38,7 @@ classifiers = [
     "Topic :: System :: Systems Administration",
 ]
 dependencies = [
-    "victor-sdk[yaml]>=0.7.0,<1.0",  # Definition-layer contract for external verticals
+    "victor-contracts[yaml]>=0.7.0,<1.0",  # Definition-layer contract for external verticals
     "numpy>=1.24",  # Required by victor.storage.embeddings
 ]
 
@@ -86,8 +86,8 @@ devops = "victor_devops.capabilities:DevOpsCapabilityProvider"
 [project.entry-points."victor.team_spec_providers"]
 devops = "victor_devops.teams:DevOpsTeamSpecProvider"
 
-# NEW: Victor SDK Protocol implementations
-[project.entry-points."victor.sdk.protocols"]
+# Victor extension protocol implementations
+[project.entry-points."victor.extension.protocols"]
 devops-tools = "victor_devops.protocols:DevOpsToolProvider"
 devops-safety = "victor_devops.protocols:DevOpsSafetyProvider"
 devops-prompts = "victor_devops.protocols:DevOpsPromptProvider"
